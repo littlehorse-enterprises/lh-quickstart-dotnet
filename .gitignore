@@ -1,0 +1,7 @@
+# jetbrains
+.idea
+# dotnet
+bin
+obj
+#python
+__pycache__
