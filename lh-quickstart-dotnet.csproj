@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LittleHorse.Sdk" Version="0.5.8-alpha" />
+    <PackageReference Include="LittleHorse.Sdk" Version="0.12.2" />
   </ItemGroup>
 
 </Project>
