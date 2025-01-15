@@ -131,7 +131,7 @@ lhctl deploy wfSpec put-wfspec-request.json
 
 Alternatively, in the [`workflow` directory](./workflow/), we have written code to define a `WfSpec` using our Python SDK. You can follow the [README](./workflow/README.md) there.
 
-Alternatively, you can check out our [WfSpec Development documentation](https://littlehorse.io/docs/server/developer-guide/wfspec-development/basics) to use the Go or Java SDK's.
+Moreover, you can check out our [WfSpec Development documentation](https://littlehorse.io/docs/server/developer-guide/wfspec-development/basics) to use the Go or Java SDK's.
 
 ## Running the `WfSpec`
 
@@ -141,7 +141,7 @@ To run the `WfSpec`, you can run the following command in another terminal:
 lhctl run quickstart input-name obiwan
 ```
 
-Then open the dashboard, click on the `quickstart` WfSpec, and inspect your `WfRun`. Congrats!
+Then open the [dashboard](http://localhost:8080/), click on the `quickstart` WfSpec, and inspect your `WfRun`. Congrats!
 
 ## Getting In Touch
 
