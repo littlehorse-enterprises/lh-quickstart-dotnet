@@ -32,8 +32,10 @@ In this example, we will run a classic "Greeting" workflow as a quickstart. The 
 ## Prerequisites
 
 Your system needs:
-* `dotnet` 6.0 or later (please make sure that the `lh-quickstart-dotnet.csproj` file matches your version)
+* `dotnet` 6.0 or later
 * `brew` (to install `lhctl`). This has been tested on Linux and Mac.
+
+**Tip:** Please make sure that the `lh-quickstart-dotnet.csproj` file matches your version
 
 ## Dotnet Setup
 
