@@ -6,13 +6,17 @@
 
 - [LittleHorse Dotnet QuickStart](#littlehorse-dotnet-quickstart)
 - [Prerequisites](#prerequisites)
-    - [Dotnet Setup](#dotnet-setup)
-    - [LittleHorse CLI](#littlehorse-cli)
-    - [Local LH Server Setup](#local-lh-server-setup)
-    - [Verifying Setup](#verifying-setup)
+  - [Dotnet Setup](#dotnet-setup)
+  - [LittleHorse CLI](#littlehorse-cli)
+  - [Local LH Server Setup](#local-lh-server-setup)
+  - [Verifying Setup](#verifying-setup)
 - [Running the Example](#running-the-example)
-    - [Register and Run Task Worker](#register-and-run-task-worker)
-- [More Information](#more-information)
+  - [Run the Task Worker](#run-the-task-worker)
+  - [Register the `WfSpec`](#register-the-wfspec)
+    - [Using `lhctl`](#using-lhctl)
+    - [Using Python](#using-python)
+  - [Running the `WfSpec`](#running-the-wfspec)
+  - [Getting In Touch](#getting-in-touch)
 
 **Get started in under 5 minutes, or your money back!** :wink:
 
@@ -77,46 +81,74 @@ lhctl version: 0.11.2 (Git SHA homebrew)
 Server version: 0.11.2
 ```
 
-If you _can't_ get the above to work, please let us know at `info@littlehorse.io`. We will create a community slack for support soon.
-
 **You should also be able to see the dashboard** at `https://localhost:8080`. It should be empty, but we will put some data in there soon when we run the workflow!
 
 If you _can't_ get the above to work, please let us know at `info@littlehorse.io`, or send us a message on our [Slack Community](https://launchpass.com/littlehorse-community).
 
 # Running the Example
 
-Without further ado, let's run the example start-to-finish.
+To run this example, we will do three things:
 
-## Register and Run Task Worker
+1. Run the dotnet portion of this project, which registers a `TaskDef` and starts a Task Worker to poll tasks.
+2. Create a `WfSpec` which _uses_ our `TaskDef`.
+3. Run the `WfSpec` using `lhctl` and see our first `WfRun` in action.
 
-First, let's register the taskDef and start our worker, so that our blocked `WfRun` can finish:
+**NOTE:** we are currently developing an SDK to build a `WfSpec` in DotNet, but it is not yet released. In the meantime, you have two options for registering your `WfSpec` in this project:
+
+1. Using `lhctl` and the [`put-wfspec-request.json`](./put-wfspec-request.json) file.
+2. Using our Java, Python, or GoLang SDK's.
+
+For more information about developing `WfSpec`s, please refer to [WfSpec Development documentation](https://littlehorse.io/docs/server/developer-guide/wfspec-development/basics).
+
+## Run the Task Worker
+
+We will run our dotnet project, which does two things:
+
+1. Create a `TaskDef` named `greet` from the `Greeting()` method.
+2. Start a Task Worker polling on the `greet` Task Queue.
+
+When we run our `WfSpec` (the last step), LittleHorse will send a `TaskRun` to be executed by the Task Worker.
 
 ```
-cd lh-quickstart-dotnet
 dotnet build
 dotnet run
 ```
 
-Once the worker starts up, please open another terminal and inspect our `WfRun` again:
+## Register the `WfSpec`
+
+In LittleHorse, you must register a `WfSpec` before you can run a `WfRun` (for more information, check out [our documentation](https://littlehorse.io/docs/server/concepts/workflows)).
+
+
+### Using `lhctl`
+
+The `put-wfspec-request.json` file included in this quickstart is a simple `WfSpec` that just executes our `greet` task. Since we are currently developing the `WfSpec` SDK for DotNet, the easiest way for you to register a `WfSpec` is as follows:
 
 ```
-lhctl get wfRun <wf_run_id>
+lhctl deploy wfSpec put-wfspec-request.json
 ```
 
-Voila! It's completed. You can also verify that the Task Queue is empty now that the Task Worker executed all of the tasks:
+### Using Python
+
+Alternatively, in the [`workflow` directory](./workflow/), we have written code to define a `WfSpec` using our Python SDK. You can follow the [README](./workflow/README.md) there.
+
+Alternatively, you can check out our [WfSpec Development documentation](https://littlehorse.io/docs/server/developer-guide/wfspec-development/basics) to use the Go or Java SDK's.
+
+## Running the `WfSpec`
+
+To run the `WfSpec`, you can run the following command in another terminal:
 
 ```
-lhctl search taskRun --taskDefName greet --status TASK_SCHEDULED
+lhctl run quickstart input-name obiwan
 ```
 
-Please refresh the dashboard, and you can see the `WfRun` has been completed!
+Then open the dashboard, click on the `quickstart` WfSpec, and inspect your `WfRun`. Congrats!
 
-## More Information
+## Getting In Touch
 
-We also have quickstarts in [Java](https://github.com/littlehorse-enterprises/lh-quickstart-java) and [Go](https://github.com/littlehorse-enterprises/lh-quickstart-go). Support for .NET is coming soon.
+Congrats on your first DotNet Task Worker! To learn more:
 
-Our extensive [documentation](www.littlehorse.dev) explains LittleHorse concepts in detail and shows you how take full advantage of our system.
-
-Our LittleHorse Server is free for production use under the SSPL license. You can find our official docker image at the [AWS ECR Public Gallery](https://gallery.ecr.aws/littlehorse/lh-server). If you would like enterprise support, or a managed service (either in the cloud or on-prem), contact `info@littlehorse.io`.
+- Dive deeper with our [Documentation](https://littlehorse.io/docs/server)
+- Join us [on Slack](https://launchpass.com/littlehorsecommunity)
+- Give us a star [on GitHub](https://github.com/littlehorse-enterprises/littlehorse)!
 
 Happy riding!
