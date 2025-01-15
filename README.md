@@ -32,7 +32,7 @@ In this example, we will run a classic "Greeting" workflow as a quickstart. The 
 # Prerequisites
 
 Your system needs:
-* `dotnet` 6.0 or later
+* `dotnet` 6.0 or later (please make sure that the `lh-quickstart-dotnet.csproj` file matches your version)
 * `brew` (to install `lhctl`). This has been tested on Linux and Mac.
 
 ## Dotnet Setup
@@ -66,7 +66,7 @@ To run a LittleHorse Server locally in one command, you can run:
 To run a LittleHorse Server locally in one command, you can run:
 
 ```
-docker run --name littlehorse -d -p 2023:2023 -p 8080:8080 ghcr.io/littlehorse-enterprises/littlehorse/lh-standalone:0.11.2
+docker run --name littlehorse -d -p 2023:2023 -p 8080:8080 ghcr.io/littlehorse-enterprises/littlehorse/lh-standalone:0.12.2
 ```
 
 Using the local LittleHorse Server takes about 15-25 seconds to start up, but it does not require any further configuration. Please note that the `lh-standalone` docker image requires at least 1.5GB of memory to function properly. This is because it runs kafka, the LH Server, and the LH Dashboard (2 JVM's and a NextJS app) all in one container.
@@ -77,8 +77,8 @@ At this point, whether you are using a local Docker deployment or a private LH C
 
 ```
 ->lhctl version
-lhctl version: 0.11.2 (Git SHA homebrew)
-Server version: 0.11.2
+lhctl version: 0.12.2 (Git SHA homebrew)
+Server version: 0.12.2
 ```
 
 **You should also be able to see the dashboard** at `https://localhost:8080`. It should be empty, but we will put some data in there soon when we run the workflow!
