@@ -1,0 +1,48 @@
+{
+  "name": "quickstart",
+  "threadSpecs": {
+    "entrypoint": {
+      "nodes": {
+        "1-greet-TASK": {
+          "outgoingEdges": [
+            {
+              "sinkNodeName": "2-exit-EXIT"
+            }
+          ],
+          "task": {
+            "taskDefId": {
+              "name": "greet"
+            },
+            "variables": [
+              {
+                "variableName": "input-name"
+              }
+            ]
+          }
+        },
+        "2-exit-EXIT": {
+          "exit": {}
+        },
+        "0-entrypoint-ENTRYPOINT": {
+          "outgoingEdges": [
+            {
+              "sinkNodeName": "1-greet-TASK"
+            }
+          ],
+          "entrypoint": {}
+        }
+      },
+      "variableDefs": [
+        {
+          "varDef": {
+            "type": "STR",
+            "name": "input-name"
+          },
+          "searchable": true,
+          "accessLevel": "PRIVATE_VAR"
+        }
+      ]
+    }
+  },
+  "entrypointThreadName": "entrypoint"
+}

@@ -4,6 +4,7 @@
 
 # LittleHorse Python Run Workflow
 
+- [LittleHorse Python Run Workflow](#littlehorse-python-run-workflow)
 - [Prerequisites](#prerequisites)
   - [Python Setup](#python-setup)
 - [Workflow](#workflow)
@@ -14,6 +15,7 @@
   - [Search for Someone's Workflow](#search-for-someones-workflow)
   - [NodeRuns and TaskRuns](#noderuns-and-taskruns)
   - [Debugging Errors](#debugging-errors)
+- [Next Steps](#next-steps)
 
 # Prerequisites
 
@@ -28,7 +30,7 @@ The first option is to install via `pip`:
 
 ```
 pip install typing_extensions==4.12.2
-pip install littlehorse-client==0.11.2
+pip install littlehorse-client==0.12.2
 ```
 
 Alternatively, you can install via `poetry` using our `pyproject.toml` file as follows:
