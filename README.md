@@ -29,7 +29,7 @@ You can run this example in two ways:
 
 In this example, we will run a classic "Greeting" workflow as a quickstart. The workflow takes in one input variable (`input-name`), and calls a `greet` Task Function with the specified `input-name` as input.
 
-# Prerequisites
+## Prerequisites
 
 Your system needs:
 * `dotnet` 6.0 or later (please make sure that the `lh-quickstart-dotnet.csproj` file matches your version)
@@ -63,8 +63,6 @@ If you have obtained a private LH Cloud Sandbox, you can skip this step and just
 
 To run a LittleHorse Server locally in one command, you can run:
 
-To run a LittleHorse Server locally in one command, you can run:
-
 ```
 docker run --name littlehorse -d -p 2023:2023 -p 8080:8080 ghcr.io/littlehorse-enterprises/littlehorse/lh-standalone:0.12.2
 ```
@@ -85,7 +83,7 @@ Server version: 0.12.2
 
 If you _can't_ get the above to work, please let us know at `info@littlehorse.io`, or send us a message on our [Slack Community](https://launchpass.com/littlehorse-community).
 
-# Running the Example
+## Running the Example
 
 To run this example, we will do three things:
 
