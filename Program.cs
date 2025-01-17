@@ -1,5 +1,6 @@
 ﻿using QuickStart.Dotnet;
 using LittleHorse.Sdk;
+using LittleHorse.Sdk.Common.Proto;
 using LittleHorse.Sdk.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,15 +39,28 @@ public class Program
         {
             var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
             var config = GetLHConfig(loggerFactory);
+
+            var request = new PutExternalEventDefRequest
+            {
+                Name = "identity-verified"
+            };
+            config.GetGrpcClientInstance().PutExternalEventDef(request);
             
-            GreetWorker executableGreet = new GreetWorker();
-            var taskWorker = new LHTaskWorker<GreetWorker>(executableGreet, "greet", config);
+            var tasks = new KnowYourCustomerTasks();
+
+            var taskWorker = new LHTaskWorker<KnowYourCustomerTasks>(tasks, "verify-identity", config);
+            var notifyCustomerVerifiedWorker = new LHTaskWorker<KnowYourCustomerTasks>(tasks, "notify-customer-verified", config);
+            var notifyCustomerNotVerifiedWorker = new LHTaskWorker<KnowYourCustomerTasks>(tasks, "notify-customer-not-verified", config);
 
             taskWorker.RegisterTaskDef();
+            notifyCustomerVerifiedWorker.RegisterTaskDef();
+            notifyCustomerNotVerifiedWorker.RegisterTaskDef();
 
             Thread.Sleep(1000);
 
             taskWorker.Start();
+            notifyCustomerVerifiedWorker.Start();
+            notifyCustomerNotVerifiedWorker.Start();
         }
     }
 }
