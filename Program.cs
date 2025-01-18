@@ -48,17 +48,17 @@ public class Program
             
             var tasks = new KnowYourCustomerTasks();
 
-            var taskWorker = new LHTaskWorker<KnowYourCustomerTasks>(tasks, "verify-identity", config);
+            var identityVerificationWorker = new LHTaskWorker<KnowYourCustomerTasks>(tasks, "verify-identity", config);
             var notifyCustomerVerifiedWorker = new LHTaskWorker<KnowYourCustomerTasks>(tasks, "notify-customer-verified", config);
             var notifyCustomerNotVerifiedWorker = new LHTaskWorker<KnowYourCustomerTasks>(tasks, "notify-customer-not-verified", config);
 
-            taskWorker.RegisterTaskDef();
+            identityVerificationWorker.RegisterTaskDef();
             notifyCustomerVerifiedWorker.RegisterTaskDef();
             notifyCustomerNotVerifiedWorker.RegisterTaskDef();
 
             Thread.Sleep(1000);
 
-            taskWorker.Start();
+            identityVerificationWorker.Start();
             notifyCustomerVerifiedWorker.Start();
             notifyCustomerNotVerifiedWorker.Start();
         }
