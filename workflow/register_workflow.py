@@ -1,8 +1,8 @@
 import logging
 
-import littlehorse
+from littlehorse import create_workflow_spec
 from littlehorse.config import LHConfig
-from littlehorse.model.common_enums_pb2 import VariableType
+from littlehorse.model import LHErrorType
 from littlehorse.workflow import Workflow, WorkflowThread
 
 logging.basicConfig(level=logging.INFO)
@@ -12,25 +12,46 @@ logging.basicConfig(level=logging.INFO)
 def get_workflow() -> Workflow:
 
     def quickstart_workflow(wf: WorkflowThread) -> None:
-        # Define an input variable
-        the_name = wf.add_variable("input-name", VariableType.STR).searchable()
+        first_name = wf.declare_str("first-name").searchable().required()
+        last_name = wf.declare_str("last-name").searchable().required()
+        ssn = wf.declare_int("ssn").masked().required()
 
-        # Execute the 'greet' task and pass in the variable as an argument.
-        wf.execute("greet", the_name)
+        identity_verified = wf.declare_bool("identity-verified").searchable()
+
+        wf.execute("verify-identity", first_name, last_name, ssn, retries=3)
+
+        identity_verification_result = wf.wait_for_event("identity-verified", timeout=60 * 60 * 24 * 3)
+
+        def handle_error(handler: WorkflowThread) -> None:
+            handler.execute("notify-customer-not-verified", first_name, last_name)
+            handler.fail("customer-not-verified", "Unable to verify customer identity in time.")
+
+        wf.handle_error(identity_verification_result, handle_error, LHErrorType.TIMEOUT)
+
+        identity_verified.assign(identity_verification_result)
+
+        def if_body(body: WorkflowThread) -> None:
+            body.execute("notify-customer-verified", first_name, last_name)
+
+        def else_body(body: WorkflowThread) -> None:
+            body.execute("notify-customer-not-verified", first_name, last_name)
+
+        wf.do_if(
+            identity_verified.is_equal_to(True),
+            if_body,
+            else_body
+        )
 
     # Provide the name of the WfSpec and a function which has the logic.
     return Workflow("quickstart", quickstart_workflow)
 
 
 def main() -> None:
-    logging.info("Registering WfSpec and TaskDef")
-
-    # Configuration loaded from environment variables
+    logging.info("Registering WfSpec")
     config = LHConfig()
     wf = get_workflow()
 
-    littlehorse.create_workflow_spec(wf, config)
-
+    create_workflow_spec(wf, config)
 
 if __name__ == "__main__":
     main()

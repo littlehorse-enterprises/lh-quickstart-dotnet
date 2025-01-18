@@ -1,48 +1,236 @@
 {
+  "entrypointThreadName": "entrypoint",
   "name": "quickstart",
   "threadSpecs": {
     "entrypoint": {
       "nodes": {
-        "1-greet-TASK": {
+        "0-entrypoint-ENTRYPOINT": {
+          "entrypoint": {},
           "outgoingEdges": [
             {
-              "sinkNodeName": "2-exit-EXIT"
+              "sinkNodeName": "1-verify-identity-TASK"
+            }
+          ]
+        },
+        "1-verify-identity-TASK": {
+          "outgoingEdges": [
+            {
+              "sinkNodeName": "2-identity-verified-EXTERNAL_EVENT"
             }
           ],
           "task": {
+            "retries": 3,
             "taskDefId": {
-              "name": "greet"
+              "name": "verify-identity"
             },
             "variables": [
               {
-                "variableName": "input-name"
+                "variableName": "first-name"
+              },
+              {
+                "variableName": "last-name"
+              },
+              {
+                "variableName": "ssn"
               }
             ]
           }
         },
-        "2-exit-EXIT": {
-          "exit": {}
-        },
-        "0-entrypoint-ENTRYPOINT": {
-          "outgoingEdges": [
+        "2-identity-verified-EXTERNAL_EVENT": {
+          "externalEvent": {
+            "externalEventDefId": {
+              "name": "identity-verified"
+            },
+            "timeoutSeconds": {
+              "literalValue": {
+                "int": "259200"
+              }
+            }
+          },
+          "failureHandlers": [
             {
-              "sinkNodeName": "1-greet-TASK"
+              "handlerSpecName": "exn-handler-2-identity-verified-EXTERNAL_EVENT-TIMEOUT",
+              "specificFailure": "TIMEOUT"
             }
           ],
-          "entrypoint": {}
+          "outgoingEdges": [
+            {
+              "sinkNodeName": "3-nop-NOP",
+              "variableMutations": [
+                {
+                  "lhsName": "identity-verified",
+                  "rhsAssignment": {
+                    "nodeOutput": {
+                      "nodeName": "2-identity-verified-EXTERNAL_EVENT"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "3-nop-NOP": {
+          "nop": {},
+          "outgoingEdges": [
+            {
+              "condition": {
+                "comparator": "EQUALS",
+                "left": {
+                  "variableName": "identity-verified"
+                },
+                "right": {
+                  "literalValue": {
+                    "bool": true
+                  }
+                }
+              },
+              "sinkNodeName": "4-notify-customer-verified-TASK"
+            },
+            {
+              "condition": {
+                "comparator": "NOT_EQUALS",
+                "left": {
+                  "variableName": "identity-verified"
+                },
+                "right": {
+                  "literalValue": {
+                    "bool": true
+                  }
+                }
+              },
+              "sinkNodeName": "5-notify-customer-not-verified-TASK"
+            }
+          ]
+        },
+        "4-notify-customer-verified-TASK": {
+          "outgoingEdges": [
+            {
+              "sinkNodeName": "6-nop-NOP"
+            }
+          ],
+          "task": {
+            "taskDefId": {
+              "name": "notify-customer-verified"
+            },
+            "variables": [
+              {
+                "variableName": "first-name"
+              },
+              {
+                "variableName": "last-name"
+              }
+            ]
+          }
+        },
+        "5-notify-customer-not-verified-TASK": {
+          "outgoingEdges": [
+            {
+              "sinkNodeName": "6-nop-NOP"
+            }
+          ],
+          "task": {
+            "taskDefId": {
+              "name": "notify-customer-not-verified"
+            },
+            "variables": [
+              {
+                "variableName": "first-name"
+              },
+              {
+                "variableName": "last-name"
+              }
+            ]
+          }
+        },
+        "6-nop-NOP": {
+          "nop": {},
+          "outgoingEdges": [
+            {
+              "sinkNodeName": "7-exit-EXIT"
+            }
+          ]
+        },
+        "7-exit-EXIT": {
+          "exit": {}
         }
       },
       "variableDefs": [
         {
-          "varDef": {
-            "type": "STR",
-            "name": "input-name"
-          },
+          "accessLevel": "PRIVATE_VAR",
+          "required": true,
           "searchable": true,
-          "accessLevel": "PRIVATE_VAR"
+          "varDef": {
+            "name": "first-name",
+            "type": "STR"
+          }
+        },
+        {
+          "accessLevel": "PRIVATE_VAR",
+          "required": true,
+          "searchable": true,
+          "varDef": {
+            "name": "last-name",
+            "type": "STR"
+          }
+        },
+        {
+          "accessLevel": "PRIVATE_VAR",
+          "required": true,
+          "varDef": {
+            "maskedValue": true,
+            "name": "ssn",
+            "type": "INT"
+          }
+        },
+        {
+          "accessLevel": "PRIVATE_VAR",
+          "searchable": true,
+          "varDef": {
+            "name": "identity-verified",
+            "type": "BOOL"
+          }
         }
       ]
+    },
+    "exn-handler-2-identity-verified-EXTERNAL_EVENT-TIMEOUT": {
+      "nodes": {
+        "0-entrypoint-ENTRYPOINT": {
+          "entrypoint": {},
+          "outgoingEdges": [
+            {
+              "sinkNodeName": "1-notify-customer-not-verified-TASK"
+            }
+          ]
+        },
+        "1-notify-customer-not-verified-TASK": {
+          "outgoingEdges": [
+            {
+              "sinkNodeName": "2-customer-not-verified-EXIT"
+            }
+          ],
+          "task": {
+            "taskDefId": {
+              "name": "notify-customer-not-verified"
+            },
+            "variables": [
+              {
+                "variableName": "first-name"
+              },
+              {
+                "variableName": "last-name"
+              }
+            ]
+          }
+        },
+        "2-customer-not-verified-EXIT": {
+          "exit": {
+            "failureDef": {
+              "failureName": "customer-not-verified",
+              "message": "Unable to verify customer identity in time."
+            }
+          }
+        }
+      }
     }
-  },
-  "entrypointThreadName": "entrypoint"
+  }
 }
