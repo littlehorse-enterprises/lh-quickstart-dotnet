@@ -43,7 +43,7 @@ After installing our Python SDK via your preferred method, you should be able to
 
 # Register Workflow
 
-First, we run `register_workflow.py`, which does two things:
+First, we run `register.py`, which does two things:
 
 1. Registers a `TaskDef` named `greet` with LittleHorse.
 2. Registers a `WfSpec` named `quickstart` with LittleHorse.
@@ -57,7 +57,7 @@ cd workflow
 A [`WfSpec`](https://littlehorse.dev/docs/concepts/workflows) specifies a process which can be orchestrated by LittleHorse. A [`TaskDef`](https://littlehorse.dev/docs/concepts/tasks) tells LittleHorse about a specification of a task that can be executed as a step in a `WfSpec`.
 
 ```sh
-python3 -m register_workflow
+python3 -m register
 ```
 
 You can inspect your `WfSpec` with `lhctl` as follows. It's ok if the response doesn't make sense, we will see it soon!
