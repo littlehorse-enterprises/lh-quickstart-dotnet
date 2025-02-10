@@ -1,4 +1,4 @@
-﻿using QuickStart.Dotnet;
+﻿using QuickStart;
 using LittleHorse.Sdk;
 using LittleHorse.Sdk.Common.Proto;
 using LittleHorse.Sdk.Worker;

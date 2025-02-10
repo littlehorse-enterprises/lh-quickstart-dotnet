@@ -1,6 +1,6 @@
 using LittleHorse.Sdk.Worker;
 
-namespace QuickStart.Dotnet
+namespace QuickStart
 {
     public class KnowYourCustomerTasks
     {
