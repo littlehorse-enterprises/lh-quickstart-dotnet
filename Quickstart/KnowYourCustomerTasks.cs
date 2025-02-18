@@ -1,11 +1,11 @@
 using LittleHorse.Sdk.Worker;
 
-namespace QuickStart
+namespace Quickstart
 {
     public class KnowYourCustomerTasks
     {
         private static readonly Random random = new Random();
-        
+
         [LHTaskMethod("verify-identity")]
         public string VerifyIdentity(string firstName, string lastName, int ssn)
         {
@@ -15,7 +15,7 @@ namespace QuickStart
             }
             return "Successfully called external API to request verification for " + firstName + " " + lastName;
         }
-        
+
         [LHTaskMethod("notify-customer-not-verified")]
         public string NotifyCustomerNotVerified(string firstName, string lastName)
         {

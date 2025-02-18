@@ -12,8 +12,6 @@
   - [Verifying Setup](#verifying-setup)
 - [Running the Example](#running-the-example)
   - [Register Metadata](#register-metadata)
-    - [Using `lhctl`](#using-lhctl)
-    - [Using Python](#using-python)
   - [Run Workflow](#run-workflow)
   - [Run Task Workers](#run-task-workers)
   - [Posting an Event](#posting-an-event)
@@ -114,16 +112,6 @@ A [`WfSpec`](https://littlehorse.io/docs/server/concepts/workflows) specifies a 
 2. Using our Java, Python, or GoLang SDK's.
 
 For more information about developing `WfSpec`s, please refer to [WfSpec Development documentation](https://littlehorse.io/docs/server/developer-guide/wfspec-development/basics).
-
-### Using `lhctl`
-
-The `put-wfspec-request.json` file included in this quickstart is a simple `WfSpec` that just executes our `greet` task. Since we are currently developing the `WfSpec` SDK for DotNet, the easiest way for you to register a `WfSpec` is as follows:
-
-```sh
-lhctl deploy wfSpec put-wfspec-request.json
-```
-
-### Using Python
 
 Alternatively, in the [`workflow` directory](./workflow/), we have written code to define a `WfSpec` using our Python SDK. You can follow the [README](./workflow/README.md) there.
 
