@@ -2,11 +2,10 @@
 <img alt="LittleHorse Logo" src="https://littlehorse.io/img/logo-wordmark-white.png" width="50%">
 </p>
 
-# LittleHorse Dotnet QuickStart
+# LittleHorse .NET Quickstart
 
-- [LittleHorse Dotnet QuickStart](#littlehorse-dotnet-quickstart)
+- [LittleHorse .NET Quickstart](#littlehorse-net-quickstart)
 - [Prerequisites](#prerequisites)
-  - [Dotnet Setup](#dotnet-setup)
   - [LittleHorse CLI](#littlehorse-cli)
   - [Local LittleHorse Server Setup](#local-littlehorse-server-setup)
   - [Verifying Setup](#verifying-setup)
@@ -19,7 +18,7 @@
 
 **Get started in under 5 minutes, or your money back!** 😉
 
-This repo contains a minimal example to get you started using LittleHorse in .Net. [LittleHorse](https://littlehorse.io) is a high-performance orchestration engine which lets you build workflow-driven microservice applications with ease.
+This repo contains a minimal example to get you started using LittleHorse in .NET. [LittleHorse](https://littlehorse.io) is a high-performance orchestration engine which lets you build workflow-driven microservice applications with ease.
 
 You can run this example in two ways:
 
@@ -38,29 +37,17 @@ Our workflow will:
 
 Your system needs:
 
-- `dotnet` 8.0 or later
+- .NET 8 or greater
 - `docker` to run the LittleHorse Server, OR access to a LittleHorse Cloud Sandbox
-- `brew` (to install `lhctl`). This has been tested on Linux and Mac.
+- Homebrew (tested on Mac or Linux) to install `lhctl`
 
-## Dotnet Setup
-
-If you are using a Debian Linux SO you can install dotnet through
-
-```sh
-sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0 
-```
-
-Alternatively, you can install dotnet using `brew`:
-
-```sh
-brew install dotnet
-```
+This example uses `dotnet` to compile the .NET code.
 
 ## LittleHorse CLI
 
 Install the LittleHorse CLI:
 
-```bash
+```sh
 brew install littlehorse-enterprises/lh/lhctl
 ```
 
@@ -81,9 +68,27 @@ Using the local LittleHorse Server takes about 15-25 seconds to start up, but it
 At this point, whether you are using a local Docker deployment or a LittleHorse Cloud Sandbox, you should be able to contact the LittleHorse Server:
 
 ```sh
-->lhctl version
-lhctl version: 0.12.5 (Git SHA homebrew)
-Server version: 0.12.5
+>lhctl whoami
+{
+  "id":  {
+    "id":  "anonymous"
+  },
+  "createdAt":  "2024-12-17T00:12:10.693Z",
+  "perTenantAcls":  {},
+  "globalAcls":  {
+    "acls":  [
+      {
+        "resources":  [
+          "ACL_ALL_RESOURCES"
+        ],
+        "allowedActions":  [
+          "ALL_ACTIONS"
+        ],
+        "name":  ""
+      }
+    ]
+  }
+}
 ```
 
 **You should also be able to see the dashboard** at `http://localhost:8080`. It should be empty, but we will put some data in there soon when we run the workflow!
@@ -98,7 +103,7 @@ If you haven't done so already, at this point go ahead and clone this repository
 
 ## Register Metadata
 
-Let's run the `register_metadata.py` app, which does 3 things:
+Let's run the `Program.cs` file, which does 3 things:
 
 1. Registers the `verify-identity`, `notify-customer-verified`, and `notify-customer-not-verified` task definitions (`TaskDef`s) with the LittleHorse Server.
 2. Registers an `ExternalEventDef` named `identity-verified` with the LittleHorse Server.
@@ -106,16 +111,18 @@ Let's run the `register_metadata.py` app, which does 3 things:
 
 A [`WfSpec`](https://littlehorse.io/docs/server/concepts/workflows) specifies a process which can be orchestrated by LittleHorse. A [`TaskDef`](https://littlehorse.io/docs/server/concepts/tasks) tells LittleHorse about a specification of a task that can be executed as a step in a `WfSpec`.
 
-**NOTE:** we are currently developing an SDK to build a `WfSpec` in DotNet, but it is not yet released. In the meantime, you have two options for registering your `WfSpec` in this project:
+```sh
+# Run the with either net8.0 or net9.0
+dotnet run register -f net9.0
+```
 
-1. Using `lhctl` and the [`put-wfspec-request.json`](./put-wfspec-request.json) file.
-2. Using our Java, Python, or GoLang SDK's.
+You can inspect your `WfSpec` with `lhctl` as follows. It's ok if the response doesn't make sense, we will see it soon!
 
-For more information about developing `WfSpec`s, please refer to [WfSpec Development documentation](https://littlehorse.io/docs/server/developer-guide/wfspec-development/basics).
+```sh
+lhctl get wfSpec quickstart
+```
 
-Alternatively, in the [`workflow` directory](./workflow/), we have written code to define a `WfSpec` using our Python SDK. You can follow the [README](./workflow/README.md) there.
-
-**NOTE:** You can also check out our [WfSpec Development documentation](https://littlehorse.io/docs/server/developer-guide/wfspec-development/basics) to use our other SDK's.
+Now, go to your dashboard in your browser (`http://localhost:8080`). Click on the `quickstart` WfSpec. You should see something that looks like a flow-chart. That is your Workflow Specification!
 
 ## Run Workflow
 
@@ -136,24 +143,21 @@ lhctl get wfRun <wf_run_id>
 
 If you would like to see it on the dashboard, go to the `WfSpec` page and scroll down. You should see your ID under the `RUNNING` column. Please double click on your `WfRun` id, and it will take you to the `WfRun` page.
 
-Note that the status is `RUNNING`! Why hasn't it completed? That's because we haven't yet started the workers which executes the `verify-identity` and `notify-customer-verified` or `notify-customer-not-verified` tasks. Want to verify that? Let's search for all tasks in the queue which haven't been executed yet. You should see an entry whose `wfRunId` matches the Id from above:
+Note that the status is `RUNNING`! Why hasn't it completed? That's because we haven't yet started a worker which executes the `verify-identity` and `notify-customer-verified` or `notify-customer-not-verified` tasks. Want to verify that? Let's search for all tasks in the queue which haven't been executed yet. You should see an entry whose `wfRunId` matches the Id from above:
 
 ```sh
 lhctl search taskRun --taskDefName verify-identity --status TASK_SCHEDULED
 ```
 
-You can also see the `TaskRun` node on the workflow. It's highlighted, meaning that it's already running! If you click on it, you'll see that it's in the `TASK_SCHEDULED` status.
+You can also see the `TaskRun` node on the workflow. It's highlighted, meaning that it's already running! If you click on it, you can see that it is in the `TASK_SCHEDULED` status.
 
 ## Run Task Workers
 
-Now let's start our workers, so that our blocked `WfRun` can finish. What this does is start a daemon which calls the `KnowYourCustomerTasks#VerifyIdentity()` C# method for every scheduled `TaskRun` with appropriate parameters.
-
-> [!TIP]
-> Make sure to change the command to fit your .Net version.
+Now let's start our workers, so that our blocked `WfRun` can finish. What this does is start a daemon which calls the `KnowYourCustomerTasks` C# methods for every scheduled `TaskRun` with appropriate parameters.
 
 ```sh
-dotnet build
-dotnet run -f net8.0
+# Run the with either net8.0 or net9.0
+dotnet run workers -f net9.0
 ```
 
 Once the workers starts up, please open another terminal and inspect our `WfRun` again:
@@ -190,7 +194,7 @@ If you go to the `WfRun` page in your browser, you will see that the workflow ha
 
 # Next Steps
 
-If you've made it this far, then it's time you become a full-fledged LittleHorse Knight!
+If you've made it this far, then it's time you became a full-fledged LittleHorse Knight!
 
 Visit our [docs](https://littlehorse.io/docs) or learn more about LittleHorse [here](https://littlehorse.io/learn).
 
@@ -203,9 +207,9 @@ Want to do more cool stuff with LittleHorse? You can find more examples [here](h
 
 We also have quickstarts in:
 
-- [Java](https://github.com/littlehorse-enterprises/lh-quickstart-java)
-- [Go](https://github.com/littlehorse-enterprises/lh-quickstart-go)
 - [Python](https://github.com/littlehorse-enterprises/lh-quickstart-python)
+- [Go](https://github.com/littlehorse-enterprises/lh-quickstart-go)
+- [Java](https://github.com/littlehorse-enterprises/lh-quickstart-java)
 
 Our extensive [documentation](https://littlehorse.io/docs) explains LittleHorse concepts in detail and shows you how take full advantage of our system.
 

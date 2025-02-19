@@ -5,6 +5,12 @@ namespace Quickstart
 {
 	public static class QuickstartWorkflow
 	{
+		public const string WorkflowName = "quickstart";
+		public const string IdentityVerifiedEvent = "identity-verified";
+		public const string VerifyIdentityTask = "verify-identity";
+		public const string NotifyCustomerVerifiedTask = "notify-customer-verified";
+		public const string NotifyCustomerNotVerifiedTask = "notify-customer-not-verified";
+
 		public static Workflow GetWorkflow()
 		{
 			void MyEntryPoint(WorkflowThread wf)
@@ -15,26 +21,30 @@ namespace Quickstart
 
 				var identityVerified = wf.DeclareBool("identity-verified").Searchable();
 
-				wf.Execute("verify-identity", firstName, lastName, ssn).WithRetries(3);
+				wf.Execute(VerifyIdentityTask, firstName, lastName, ssn).WithRetries(3);
 
-				var identityVerificationResult = wf.WaitForEvent("identity-verified").WithTimeout(60 * 60 * 24 * 3);
+				var identityVerificationResult = wf.WaitForEvent(IdentityVerifiedEvent).WithTimeout(60 * 60 * 24 * 3);
 
-				wf.HandleError(identityVerificationResult, LHErrorType.Timeout, handler =>
-				{
-					handler.Execute("notify-customer-not-verified", firstName, lastName);
-					// handler.Fail("customer-not-verified", "Unable to verify customer identity in time.");
-				});
+				wf.HandleError(
+					identityVerificationResult,
+					LHErrorType.Timeout,
+					handler =>
+					{
+						handler.Execute(NotifyCustomerNotVerifiedTask, firstName, lastName);
+						handler.Fail("customer-not-verified", "Unable to verify customer identity in time.");
+					}
+				);
 
 				identityVerified.Assign(identityVerificationResult);
 
 				wf.DoIf(
 					wf.Condition(identityVerified, Comparator.Equals, true),
-					ifThread => ifThread.Execute("notify-customer-verified", firstName, lastName),
-					elseThread => elseThread.Execute("notify-customer-not-verified", firstName, lastName)
+					ifThread => ifThread.Execute(NotifyCustomerVerifiedTask, firstName, lastName),
+					elseThread => elseThread.Execute(NotifyCustomerNotVerifiedTask, firstName, lastName)
 				);
 			}
 
-			return new Workflow("quickstart", MyEntryPoint);
+			return new Workflow(WorkflowName, MyEntryPoint);
 		}
 	}
 }
